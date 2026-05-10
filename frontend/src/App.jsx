@@ -1,14 +1,15 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-const apiBaseUrl = import.meta.env.DEV
-  ? import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-  : ''
+const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL || '').trim()
+const DEFAULT_API_BASE_URL = 'http://localhost:8000'
 const LANGUAGE_STORAGE_KEY = '1win-signals-language'
 const LANGUAGE_COOKIE_KEY = '1win-signals-language'
 const PLAYER_ID_STORAGE_KEY = '1win-signals-player-id'
 const SIGNAL_COUNT_STORAGE_KEY = '1win-signals-total-clicks'
 const DEFAULT_LANGUAGE = 'en'
 const PROMO_CODE = 'BSTOP'
+const DEFAULT_APP_NAME = 'Signal Control'
+const DEFAULT_REGISTRATION_URL = 'https://1wfwlx.life/?open=register&p=14fv'
 const MODAL_ANIMATION_MS = 220
 const PENALTY_ROWS = 3
 const PENALTY_COLUMNS = 5
@@ -23,6 +24,18 @@ const KENO_MODES = [
 const MINES_GRID_CELLS = 25
 const MINES_OPTIONS = [2, 3, 5, 7]
 const MINES_REVEAL_WEIGHTS = [3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7, 7, 8, 9, 10]
+const assetPath = (relativePath) => `${import.meta.env.BASE_URL}${relativePath.replace(/^\/+/, '')}`
+const staticConfig = {
+  appName: import.meta.env.VITE_APP_NAME || DEFAULT_APP_NAME,
+  frontendOrigin: import.meta.env.VITE_FRONTEND_ORIGIN || '',
+  hasBotToken: false,
+  registrationUrl: import.meta.env.VITE_REGISTRATION_URL || DEFAULT_REGISTRATION_URL,
+}
+const configEndpoint = import.meta.env.DEV
+  ? `${apiBaseUrl || DEFAULT_API_BASE_URL}/api/config`
+  : apiBaseUrl
+    ? `${apiBaseUrl}/api/config`
+    : ''
 
 const LANGUAGE_OPTIONS = [
   { code: 'ru', badge: 'RU', label: 'РУССКИЙ' },
@@ -30,20 +43,20 @@ const LANGUAGE_OPTIONS = [
 ]
 
 const GAME_CARDS = [
-  { id: 'penalty', titleKey: 'penaltyTitle', image: '/games/penalty.avif' },
-  { id: 'keno', titleKey: 'kenoTitle', image: '/games/keno.avif' },
-  { id: 'mines', titleKey: 'minesTitle', image: '/games/mines2.avif' },
-  { id: 'coinflip', titleKey: 'coinFlipTitle', image: '/games/coinflip.avif' },
+  { id: 'penalty', titleKey: 'penaltyTitle', image: assetPath('games/penalty.avif') },
+  { id: 'keno', titleKey: 'kenoTitle', image: assetPath('games/keno.avif') },
+  { id: 'mines', titleKey: 'minesTitle', image: assetPath('games/mines2.avif') },
+  { id: 'coinflip', titleKey: 'coinFlipTitle', image: assetPath('games/coinflip.avif') },
 ]
 
 const COIN_SIDES = {
   heads: {
     label: 'HEADS!',
-    image: '/games/coin-gold.png',
+    image: assetPath('games/coin-gold.png'),
   },
   tails: {
     label: 'TAILS!',
-    image: '/games/coin-silver.png',
+    image: assetPath('games/coin-silver.png'),
   },
 }
 
@@ -416,8 +429,17 @@ export default function App() {
     let ignore = false
 
     async function loadConfig() {
+      if (!configEndpoint) {
+        setConfig(staticConfig)
+        setIsConfigLoading(false)
+        return
+      }
+
       try {
-        const response = await fetch(`${apiBaseUrl}/api/config`)
+        const response = await fetch(configEndpoint)
+        if (!response.ok) {
+          throw new Error('Config request failed')
+        }
         const data = await response.json()
 
         if (!ignore) {
@@ -425,7 +447,7 @@ export default function App() {
         }
       } catch {
         if (!ignore) {
-          setConfig({})
+          setConfig(staticConfig)
         }
       } finally {
         if (!ignore) {
@@ -934,7 +956,7 @@ export default function App() {
         return (
           <section className="mines-screen">
             <div className="coinflip-screen__header">
-              <img src="/games/mines-star.svg" alt="" className="coinflip-screen__icon" />
+              <img src={assetPath('games/mines-star.svg')} alt="" className="coinflip-screen__icon" />
               <span>{t.minesTitle}</span>
             </div>
 
@@ -963,9 +985,9 @@ export default function App() {
                       className={`mines-cell ${hasStar ? 'mines-cell--active' : ''}`}
                       style={hasStar ? { '--mines-reveal-delay': `${revealOrder * 70}ms` } : undefined}
                     >
-                      <img src="/games/mines-tile.svg" alt="" className="mines-cell__base" aria-hidden="true" />
+                      <img src={assetPath('games/mines-tile.svg')} alt="" className="mines-cell__base" aria-hidden="true" />
                       {hasStar ? (
-                        <img src="/games/mines-star.svg" alt="Safe signal" className="mines-cell__star" />
+                        <img src={assetPath('games/mines-star.svg')} alt="Safe signal" className="mines-cell__star" />
                       ) : null}
                     </div>
                   )
@@ -993,7 +1015,7 @@ export default function App() {
         return (
           <section className="penalty-screen">
             <div className="coinflip-screen__header">
-              <img src="/games/penalty-ball.png" alt="" className="coinflip-screen__icon" />
+              <img src={assetPath('games/penalty-ball.png')} alt="" className="coinflip-screen__icon" />
               <span>{t.penaltyTitle}</span>
             </div>
 
@@ -1011,7 +1033,7 @@ export default function App() {
                       >
                         {hasBall ? (
                           <img
-                            src="/games/penalty-ball.png"
+                            src={assetPath('games/penalty-ball.png')}
                             alt="Penalty signal"
                             className="penalty-cell__ball"
                           />
@@ -1046,7 +1068,7 @@ export default function App() {
         return (
           <section className="coinflip-screen">
             <div className="coinflip-screen__header">
-              <img src="/games/coin-gold.png" alt="" className="coinflip-screen__icon" />
+              <img src={assetPath('games/coin-gold.png')} alt="" className="coinflip-screen__icon" />
               <span>{t.coinFlipTitle}</span>
             </div>
 
