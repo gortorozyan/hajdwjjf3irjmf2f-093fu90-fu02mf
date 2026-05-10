@@ -1,0 +1,24 @@
+<svg width="120" height="110" viewBox="0 0 120 110" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="starFill" x1="16" y1="14" x2="96" y2="92" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8CC7FF"/>
+      <stop offset="0.42" stop-color="#4C97FF"/>
+      <stop offset="1" stop-color="#175DDA"/>
+    </linearGradient>
+    <filter id="starGlow" x="0" y="0" width="120" height="110" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feColorMatrix in="blur" type="matrix" values="0 0 0 0 0.18 0 0 0 0 0.52 0 0 0 0 1 0 0 0 0.28 0"/>
+      <feBlend in="SourceGraphic" mode="normal"/>
+    </filter>
+  </defs>
+  <path
+    d="M60 8L74.5 35.5L105 39.5L82.5 60.5L88.5 91L60 76L31.5 91L37.5 60.5L15 39.5L45.5 35.5L60 8Z"
+    fill="url(#starFill)"
+    filter="url(#starGlow)"
+  />
+  <path
+    d="M60 18L70 37L91 40L75.5 54.5L79.5 75L60 64.5L40.5 75L44.5 54.5L29 40L50 37L60 18Z"
+    fill="white"
+    fill-opacity="0.12"
+  />
+</svg>

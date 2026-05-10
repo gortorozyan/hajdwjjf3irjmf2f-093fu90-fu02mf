@@ -1,0 +1,17 @@
+<svg width="120" height="91" viewBox="0 0 120 91" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="120" height="91" rx="3" fill="#353841"/>
+  <rect x="0.5" y="0.5" width="119" height="90" rx="2.5" stroke="rgba(255,255,255,0.06)"/>
+  <text
+    x="60"
+    y="56"
+    text-anchor="middle"
+    fill="#4A4E58"
+    font-size="34"
+    font-style="italic"
+    font-weight="900"
+    font-family="Segoe UI, Arial, sans-serif"
+    letter-spacing="-1"
+  >
+    1W
+  </text>
+</svg>
